@@ -7,8 +7,8 @@ import com.kursayin.platoformer.Platoformer;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.width = 1920;
-		config.height = 1080;
+		config.width = 800;
+		config.height = 480;
 		new LwjglApplication(new Platoformer(), config);
 	}
 }
