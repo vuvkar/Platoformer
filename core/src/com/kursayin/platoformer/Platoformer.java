@@ -25,8 +25,8 @@ public class Platoformer extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		float delta = Gdx.graphics.getDeltaTime();
-		platoformerUI.act(delta);
 		mainRender.act(delta);
+		platoformerUI.act(delta);
 
 		mainRender.draw();
 		platoformerUI.draw();
@@ -36,7 +36,7 @@ public class Platoformer extends ApplicationAdapter {
 	
 	@Override
 	public void dispose () {
-		platoformerUI.dispoe();
+		platoformerUI.dispose();
 		mainRender.dispose();
 	}
 }

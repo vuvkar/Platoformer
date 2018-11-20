@@ -5,7 +5,7 @@ public class PlatoformerUI {
 
     }
 
-    public void dispoe() {
+    public void dispose() {
 
     }
 
