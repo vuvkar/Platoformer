@@ -12,7 +12,7 @@ import com.kursayin.platoformer.Components.PositionComponent;
 import com.kursayin.platoformer.Components.TextureComponent;
 import com.kursayin.platoformer.Platoformer;
 import com.kursayin.platoformer.Systems.DrawSystem;
-import com.kursayin.platoformer.UI.PhysicWorld;;
+import com.kursayin.platoformer.PhysicWorld;;
 
 public class PlatoformerMainRender {
     Platoformer platoformer;
