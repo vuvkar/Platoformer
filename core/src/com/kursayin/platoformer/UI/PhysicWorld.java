@@ -16,9 +16,14 @@ public class PhysicWorld  implements Screen{
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private OrthographicCamera camera;
+
+    private final float TIMESTEP = 1 / 60f;
+    private final int VELOCITYITERATIONS = 8, POSITIONITERATIONS = 3;
     
     public void render(float delta) {
         debugRenderer.render(world, camera.combined);
+
+        world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
     }
 
     public void act(float delta) {
@@ -30,7 +35,7 @@ public class PhysicWorld  implements Screen{
         world = new World(new Vector2(0,-9.81f), true);
 
         debugRenderer = new Box2DDebugRenderer();
-        camera = new OrthographicCamera(Gdx.graphics.getWidth()/10, Gdx.graphics.getHeight()/10);
+        camera = new OrthographicCamera(Gdx.graphics.getWidth()/15, Gdx.graphics.getHeight()/15);
 
         //body
         BodyDef body = new BodyDef();
