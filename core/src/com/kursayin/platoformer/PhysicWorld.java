@@ -97,29 +97,8 @@ public class PhysicWorld  implements Screen{
             }
         });
 
-        //BALL
-        //body
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyType.DynamicBody;
-        bodyDef.position.set(0,2);
-
-        //circle
-        CircleShape ballShapeDef = new CircleShape();
-        ballShapeDef.setRadius(.5f);
-
-        // ChainShape boxShapeDef = new ChainShape();
-        // boxShapeDef.createChain(new Vector2[]{new Vector2(-1,1), new Vector2(1,1), new Vector2(1,3), new Vector2(-1,3)});
-
-        //fixture
         FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = ballShapeDef;
-        fixtureDef.density = 2.5f;
-        fixtureDef.friction = .25f;
-        fixtureDef.restitution = 0;
-
-        world.createBody(bodyDef).createFixture(fixtureDef);
-
-        ballShapeDef.dispose();
 
         //GROUND
         //body
@@ -128,7 +107,7 @@ public class PhysicWorld  implements Screen{
 
         //shape
         ChainShape groundShape = new ChainShape();
-        groundShape.createChain(new Vector2[] { new Vector2(-50, 0), new Vector2(50, 0) });
+        groundShape.createChain(new Vector2[] { new Vector2(-500, 0), new Vector2(500, 0) });
         
         // fixture
         fixtureDef.shape = groundShape;
@@ -158,6 +137,45 @@ public class PhysicWorld  implements Screen{
         box.createFixture(fixtureDef);
 
         boxShape.dispose();
+
+        //BALL
+        //body
+        bodyDef.type = BodyType.DynamicBody;
+        bodyDef.position.set(3,5);
+
+        //shape
+        CircleShape ballShapeDef = new CircleShape();
+        ballShapeDef.setPosition(new Vector2(0,-.5f));
+        ballShapeDef.setRadius(.5f);
+
+        // ChainShape boxShapeDef = new ChainShape();
+        // boxShapeDef.createChain(new Vector2[]{new Vector2(-1,1), new Vector2(1,1), new Vector2(1,3), new Vector2(-1,3)});
+
+        //fixture
+        fixtureDef.shape = ballShapeDef;
+        fixtureDef.density = 2.5f;
+        fixtureDef.friction = .25f;
+        fixtureDef.restitution = 0;
+
+        world.createBody(bodyDef).createFixture(fixtureDef);
+
+        ballShapeDef.dispose();
+
+        //box squat
+        //box
+        PolygonShape boxSquatShape = new PolygonShape();
+        boxSquatShape.setAsBox(0.5f, 0.5f, new Vector2(0,-.5f), 0);
+
+        //fixture
+        fixtureDef.shape = boxSquatShape;
+        fixtureDef.friction = .75f;
+        fixtureDef.restitution = .1f;
+        fixtureDef.density = 5;
+
+        box.createFixture(fixtureDef);
+
+        boxSquatShape.dispose();
+        
     }
 
     @Override
