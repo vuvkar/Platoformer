@@ -38,7 +38,6 @@ public class PlatoformerMainRender {
         engine.addSystem(drawSystem);
 
         world=new PhysicWorld();
-        world.show();
     }
     
     public void act(float delta) {
@@ -49,7 +48,7 @@ public class PlatoformerMainRender {
     public void draw() {
         batch.begin();
         backgroundRender.draw();
-        // engine.update(Gdx.graphics.getDeltaTime());
+        engine.update(Gdx.graphics.getDeltaTime());
         world.render(Gdx.graphics.getDeltaTime());
         batch.end();
     }

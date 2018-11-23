@@ -16,7 +16,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 
-public class PhysicWorld  implements Screen{
+public class PhysicWorld {
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private OrthographicCamera camera;
@@ -42,8 +42,7 @@ public class PhysicWorld  implements Screen{
 
     }
 
-    @Override
-    public void show() {
+    public PhysicWorld() {
         world = new World(new Vector2(0,-9.81f), true);
         debugRenderer = new Box2DDebugRenderer();
 
@@ -144,44 +143,39 @@ public class PhysicWorld  implements Screen{
 
         //box squat
         //box
-        PolygonShape boxSquatShape = new PolygonShape();
-        boxSquatShape.setAsBox(0.5f, 0.5f, new Vector2(0,-.5f), 0);
+        // PolygonShape boxSquatShape = new PolygonShape();
+        // boxSquatShape.setAsBox(0.5f, 0.5f, new Vector2(0,-.5f), 0);
 
-        //fixture
-        fixtureDef.shape = boxSquatShape;
-        fixtureDef.friction = .75f;
-        fixtureDef.restitution = .1f;
-        fixtureDef.density = 5;
+        // //fixture
+        // fixtureDef.shape = boxSquatShape;
+        // fixtureDef.friction = .75f;
+        // fixtureDef.restitution = .1f;
+        // fixtureDef.density = 5;
 
-        box.createFixture(fixtureDef);
+        // box.createFixture(fixtureDef);
 
-        boxSquatShape.dispose();
+        // boxSquatShape.dispose();
         
     }
 
-    @Override
     public void resize(int width, int height) {
         camera.viewportWidth = width / 25;
         camera.viewportHeight = height / 25;
         camera.update();
     }
 
-    @Override
     public void pause() {
 
     }
 
-    @Override
     public void resume() {
 
     }
 
-    @Override
     public void hide() {
 
     }
 
-    @Override
     public void dispose() {
 
     }
