@@ -25,13 +25,12 @@ public class PhysicWorld  implements Screen{
     private Vector2 movement = new Vector2();
     private Body box;
 
-    private final float TIMESTEP = 1 / 60f;
+    private Vector2 direction = new Vector2(500, 500);
+
     private final int VELOCITYITERATIONS = 8, POSITIONITERATIONS = 3;
     
     public void render(float delta) {
-        
-        world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
-        box.applyForceToCenter(movement, true);
+        world.step(delta, VELOCITYITERATIONS, POSITIONITERATIONS);
         
         camera.position.set(box.getPosition().x, box.getPosition().y, 0);
         camera.update();
@@ -58,39 +57,21 @@ public class PhysicWorld  implements Screen{
                         Gdx.app.exit();
                         break;
                     case Keys.W:
-                    case Keys.UP:
-                        movement.y = speed;
+                        direction.x = 0;
+                        direction.y = 50;
+                        box.applyLinearImpulse (direction, box.getLocalCenter(), true);
                         break;
                     case Keys.S:
-                    case Keys.DOWN:
-                        movement.y = -speed;
                         break;
                     case Keys.A:
-                    case Keys.LEFT:
-                        movement.x = -speed;
+                        direction.x = 50;
+                        direction.y = 0;
+                        box.applyLinearImpulse (direction, box.getLocalCenter(), true);
                         break;
                     case Keys.D:
-                    case Keys.RIGHT:
-                        movement.x = speed;
-                        break;
-                }
-                return true;
-            }
-
-            @Override
-            public boolean keyUp(int keycode) {
-                switch(keycode){
-                    case Keys.W:
-                    case Keys.UP:
-                    case Keys.S:
-                    case Keys.DOWN:
-                        movement.y = 0;
-                        break;
-                    case Keys.A:
-                    case Keys.LEFT:
-                    case Keys.D:
-                    case Keys.RIGHT:
-                        movement.x = 0;
+                        direction.x = -50;
+                        direction.y = 0;
+                        box.applyLinearImpulse (direction, box.getLocalCenter(), true);
                         break;
                 }
                 return true;

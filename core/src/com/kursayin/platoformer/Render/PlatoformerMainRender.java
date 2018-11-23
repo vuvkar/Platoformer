@@ -42,7 +42,6 @@ public class PlatoformerMainRender {
     }
     
     public void act(float delta) {
-
         backgroundRender.act(delta);
         world.act(delta);
     }
@@ -50,7 +49,7 @@ public class PlatoformerMainRender {
     public void draw() {
         batch.begin();
         backgroundRender.draw();
-        engine.update(Gdx.graphics.getDeltaTime());
+        // engine.update(Gdx.graphics.getDeltaTime());
         world.render(Gdx.graphics.getDeltaTime());
         batch.end();
     }
