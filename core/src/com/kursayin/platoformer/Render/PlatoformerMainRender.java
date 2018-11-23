@@ -55,6 +55,10 @@ public class PlatoformerMainRender {
         batch.end();
     }
 
+    public void resize(int width, int height){
+        world.resize(width, height);
+    }
+
     public void dispose() {
 
     }

@@ -5,11 +5,13 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
@@ -19,13 +21,22 @@ public class PhysicWorld  implements Screen{
     private Box2DDebugRenderer debugRenderer;
     private OrthographicCamera camera;
 
+    private float speed = 500;
+    private Vector2 movement = new Vector2();
+    private Body box;
+
     private final float TIMESTEP = 1 / 60f;
     private final int VELOCITYITERATIONS = 8, POSITIONITERATIONS = 3;
     
     public void render(float delta) {
-        debugRenderer.render(world, camera.combined);
-
+        
         world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
+        box.applyForceToCenter(movement, true);
+        
+        camera.position.set(box.getPosition().x, box.getPosition().y, 0);
+        camera.update();
+
+        debugRenderer.render(world, camera.combined);
     }
 
     public void act(float delta) {
@@ -42,8 +53,46 @@ public class PhysicWorld  implements Screen{
         Gdx.input.setInputProcessor(new InputController(){
             @Override
             public boolean keyDown(int keycode) {
-                if(keycode == Keys.ESCAPE)
-                    Gdx.app.exit();
+                switch(keycode){
+                    case Keys.ESCAPE:
+                        Gdx.app.exit();
+                        break;
+                    case Keys.W:
+                    case Keys.UP:
+                        movement.y = speed;
+                        break;
+                    case Keys.S:
+                    case Keys.DOWN:
+                        movement.y = -speed;
+                        break;
+                    case Keys.A:
+                    case Keys.LEFT:
+                        movement.x = -speed;
+                        break;
+                    case Keys.D:
+                    case Keys.RIGHT:
+                        movement.x = speed;
+                        break;
+                }
+                return true;
+            }
+
+            @Override
+            public boolean keyUp(int keycode) {
+                switch(keycode){
+                    case Keys.W:
+                    case Keys.UP:
+                    case Keys.S:
+                    case Keys.DOWN:
+                        movement.y = 0;
+                        break;
+                    case Keys.A:
+                    case Keys.LEFT:
+                    case Keys.D:
+                    case Keys.RIGHT:
+                        movement.x = 0;
+                        break;
+                }
                 return true;
             }
         });
@@ -89,6 +138,26 @@ public class PhysicWorld  implements Screen{
         world.createBody(bodyDef).createFixture(fixtureDef);
 
         groundShape.dispose();
+
+        //box
+        //body
+        bodyDef.type = BodyType.DynamicBody;
+        bodyDef.position.set(2.25f,10);
+
+        //shape
+        PolygonShape boxShape = new PolygonShape();
+        boxShape.setAsBox(.5f, 1);
+
+        //fixture
+        fixtureDef.shape = boxShape;
+        fixtureDef.friction = .75f;
+        fixtureDef.restitution = .1f;
+        fixtureDef.density = 5;
+
+        box = world.createBody(bodyDef);
+        box.createFixture(fixtureDef);
+
+        boxShape.dispose();
     }
 
     @Override
