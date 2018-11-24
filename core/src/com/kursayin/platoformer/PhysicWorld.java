@@ -129,11 +129,11 @@ public class PhysicWorld {
                     case Keys.S:
                         box.getFixtureList().get(0).setSensor(true);
                         box.getFixtureList().get(1).setSensor(false);
-                        if(!onGround){
-                            direction.x = 0;
-                            direction.y = -300;
-                            box.applyLinearImpulse (direction, box.getPosition(), true);
-                        }
+                        // if(!onGround){
+                        //     direction.x = 0;
+                        //     direction.y = -300;
+                        //     box.applyLinearImpulse (direction, box.getPosition(), true);
+                        // }
                         break;
                     case Keys.A:
                         startedLeft = true;
@@ -246,8 +246,9 @@ public class PhysicWorld {
         
         boxSquatShape.dispose();
         
-        box.setAngularDamping(0.8f);
-        box.setLinearDamping(0.8f);
+        box.setAngularDamping(0);
+        box.setLinearDamping(0);
+        // box.setGravityScale(1.5f);
         box.setFixedRotation(true);
     }
 
