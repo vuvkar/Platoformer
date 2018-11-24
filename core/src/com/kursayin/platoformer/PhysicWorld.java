@@ -1,7 +1,7 @@
 package com.kursayin.platoformer;
 
+
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
@@ -10,7 +10,12 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -21,9 +26,16 @@ public class PhysicWorld {
     private Box2DDebugRenderer debugRenderer;
     private OrthographicCamera camera;
 
-    private float speed = 500;
-    private Vector2 movement = new Vector2();
     private Body box;
+
+    private Body ground;
+
+    private boolean startedLeft = false;
+    private boolean startedRight = false;
+    private boolean onGround = false; 
+    private boolean startedUp = false;
+    private float maxVelocity = 20;
+
 
     private Vector2 direction = new Vector2(500, 500);
 
@@ -39,7 +51,23 @@ public class PhysicWorld {
     }
 
     public void act(float delta) {
+        if(startedLeft &&  Math.abs(box.getLinearVelocity().x) < maxVelocity) {
+            direction.x = -10;
+            direction.y = 0;
+            box.applyLinearImpulse (direction, box.getPosition(), true);
+        }
 
+        if(startedRight &&  Math.abs(box.getLinearVelocity().x) < maxVelocity) {
+            direction.x = 10;
+            direction.y = 0;
+            box.applyLinearImpulse (direction, box.getPosition(), true);
+        }
+
+        if(startedUp && onGround) {
+            direction.x = 0;
+            direction.y = 100;
+            box.applyLinearImpulse (direction, box.getPosition(), true);
+        } 
     }
 
     public PhysicWorld() {
@@ -47,6 +75,46 @@ public class PhysicWorld {
         debugRenderer = new Box2DDebugRenderer();
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth()/25, Gdx.graphics.getHeight()/25);
+        world.setContactListener(new WorldContactListener() {
+            
+        });
+
+        world.setContactListener(new WorldContactListener(){
+            @Override
+            public void beginContact(Contact contact) {
+                Fixture fixA = contact.getFixtureA();
+                Fixture fixB = contact.getFixtureB();
+
+                if(fixA.getUserData() == "player" || fixA.getUserData() == "squat-player" || fixB.getUserData() == "player" || fixB.getUserData() == "squat-player" ){
+                    Fixture playerFix = fixA.getUserData() == "player" || fixA.getUserData() == "squat-player" ? fixA : fixB;
+                    Fixture objectFix = playerFix.getUserData() == fixA.getUserData()? fixB : fixA; 
+
+                    if(objectFix.getUserData() != null){
+                        if(objectFix.getUserData() == "ground"){
+                            onGround = true;
+                        }
+                    } 
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact) {
+                Fixture fixA = contact.getFixtureA();
+                Fixture fixB = contact.getFixtureB();
+
+                if(fixA.getUserData() == "player" || fixA.getUserData() == "squat-player" || fixB.getUserData() == "player" || fixB.getUserData() == "squat-player" ){
+                    Fixture playerFix = fixA.getUserData() == "player" || fixA.getUserData() == "squat-player" ? fixA : fixB;
+                    Fixture objectFix = playerFix.getUserData() == fixA.getUserData()? fixB : fixA; 
+
+                    if(objectFix.getUserData() != null){
+                        if(objectFix.getUserData() == "ground"){
+                            onGround = false;
+                        }
+                    } 
+                }
+            }
+        });
+
 
         Gdx.input.setInputProcessor(new InputController(){
             @Override
@@ -56,21 +124,44 @@ public class PhysicWorld {
                         Gdx.app.exit();
                         break;
                     case Keys.W:
-                        direction.x = 0;
-                        direction.y = 50;
-                        box.applyLinearImpulse (direction, box.getLocalCenter(), true);
+                        startedUp = true;
                         break;
                     case Keys.S:
+                        box.getFixtureList().get(0).setSensor(true);
+                        box.getFixtureList().get(1).setSensor(false);
+                        if(!onGround){
+                            direction.x = 0;
+                            direction.y = -300;
+                            box.applyLinearImpulse (direction, box.getPosition(), true);
+                        }
                         break;
                     case Keys.A:
-                        direction.x = 50;
-                        direction.y = 0;
-                        box.applyLinearImpulse (direction, box.getLocalCenter(), true);
+                        startedLeft = true;
+                        box.setAngularVelocity(0);
                         break;
                     case Keys.D:
-                        direction.x = -50;
-                        direction.y = 0;
-                        box.applyLinearImpulse (direction, box.getLocalCenter(), true);
+                        startedRight = true;
+                        box.setAngularVelocity(0);
+                        break;
+                }
+                return true;
+            }
+
+            @Override
+            public boolean keyUp(int keycode){
+                switch(keycode){
+                    case Keys.W:
+                        startedUp = false;
+                        break;
+                    case Keys.S:
+                        box.getFixtureList().get(0).setSensor(false);
+                        box.getFixtureList().get(1).setSensor(true);
+                        break;
+                    case Keys.A:
+                        startedLeft = false;
+                        break;
+                    case Keys.D:
+                        startedRight = false;
                         break;
                 }
                 return true;
@@ -91,12 +182,34 @@ public class PhysicWorld {
         
         // fixture
         fixtureDef.shape = groundShape;
-        fixtureDef.friction = .5f;
+        fixtureDef.friction = 10;
+        fixtureDef.restitution = 0;
+
+        ground = world.createBody(bodyDef);
+        ground.createFixture(fixtureDef).setUserData("ground");
+
+        groundShape.dispose();
+
+        
+
+        //BALL
+        //body
+        bodyDef.type = BodyType.DynamicBody;
+        bodyDef.position.set(-3,10);
+
+        //shape
+        CircleShape ballShapeDef = new CircleShape();
+        ballShapeDef.setPosition(new Vector2(0,-.5f));
+        ballShapeDef.setRadius(3f);
+
+        //fixture
+        fixtureDef.shape = ballShapeDef;
+        fixtureDef.friction = .25f;
         fixtureDef.restitution = 0;
 
         world.createBody(bodyDef).createFixture(fixtureDef);
-
-        groundShape.dispose();
+        
+        ballShapeDef.dispose();
 
         //box
         //body
@@ -109,53 +222,33 @@ public class PhysicWorld {
 
         //fixture
         fixtureDef.shape = boxShape;
-        fixtureDef.friction = .75f;
+        fixtureDef.friction = .1f;
         fixtureDef.restitution = .1f;
         fixtureDef.density = 5;
 
         box = world.createBody(bodyDef);
-        box.createFixture(fixtureDef);
+        box.createFixture(fixtureDef).setUserData("player");;
 
         boxShape.dispose();
-
-        //BALL
-        //body
-        bodyDef.type = BodyType.DynamicBody;
-        bodyDef.position.set(3,5);
-
-        //shape
-        CircleShape ballShapeDef = new CircleShape();
-        ballShapeDef.setPosition(new Vector2(0,-.5f));
-        ballShapeDef.setRadius(.5f);
-
-        // ChainShape boxShapeDef = new ChainShape();
-        // boxShapeDef.createChain(new Vector2[]{new Vector2(-1,1), new Vector2(1,1), new Vector2(1,3), new Vector2(-1,3)});
-
-        //fixture
-        fixtureDef.shape = ballShapeDef;
-        fixtureDef.density = 2.5f;
-        fixtureDef.friction = .25f;
-        fixtureDef.restitution = 0;
-
-        world.createBody(bodyDef).createFixture(fixtureDef);
-
-        ballShapeDef.dispose();
-
+        
         //box squat
         //box
-        // PolygonShape boxSquatShape = new PolygonShape();
-        // boxSquatShape.setAsBox(0.5f, 0.5f, new Vector2(0,-.5f), 0);
-
-        // //fixture
-        // fixtureDef.shape = boxSquatShape;
-        // fixtureDef.friction = .75f;
-        // fixtureDef.restitution = .1f;
-        // fixtureDef.density = 5;
-
-        // box.createFixture(fixtureDef);
-
-        // boxSquatShape.dispose();
+        PolygonShape boxSquatShape = new PolygonShape();
+        boxSquatShape.setAsBox(0.5f, 0.5f, new Vector2(0,-.5f), 0);
         
+        // //fixture
+        fixtureDef.shape = boxSquatShape;
+        fixtureDef.restitution = .1f;
+        fixtureDef.density = 5;
+        
+        
+        box.createFixture(fixtureDef).setUserData("squat-player");
+        
+        boxSquatShape.dispose();
+        
+        box.setAngularDamping(0.8f);
+        box.setLinearDamping(0.8f);
+        box.setFixedRotation(true);
     }
 
     public void resize(int width, int height) {

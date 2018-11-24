@@ -16,13 +16,13 @@ public class BackgroundRender {
 
     public BackgroundRender(Batch batch) {
         background = new Texture(Gdx.files.internal("background/sky.png"));
-        background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        // background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
         this.batch = batch;
     }
 
     public void act(float delta) {
-        x += velocity ;
+        // x += velocity ;
     }
 
     public void draw() {
