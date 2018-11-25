@@ -5,19 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.ChainShape;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 
@@ -62,12 +50,6 @@ public class PhysicWorld {
             direction.y = 0;
             box.applyLinearImpulse (direction, box.getPosition(), true);
         }
-
-        if(startedUp && onGround) {
-            direction.x = 0;
-            direction.y = 100;
-            box.applyLinearImpulse (direction, box.getPosition(), true);
-        } 
     }
 
     public PhysicWorld() {
@@ -75,9 +57,6 @@ public class PhysicWorld {
         debugRenderer = new Box2DDebugRenderer();
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth()/25, Gdx.graphics.getHeight()/25);
-        world.setContactListener(new WorldContactListener() {
-            
-        });
 
         world.setContactListener(new WorldContactListener(){
             @Override
@@ -120,11 +99,12 @@ public class PhysicWorld {
             @Override
             public boolean keyDown(int keycode) {
                 switch(keycode){
-                    case Keys.ESCAPE:
-                        Gdx.app.exit();
-                        break;
                     case Keys.W:
-                        startedUp = true;
+                        if(onGround) {
+                            direction.x = 0;
+                            direction.y = 500;
+                            box.applyLinearImpulse (direction, box.getPosition(), true);
+                        }
                         break;
                     case Keys.S:
                         box.getFixtureList().get(0).setSensor(true);
@@ -216,9 +196,14 @@ public class PhysicWorld {
         bodyDef.type = BodyType.DynamicBody;
         bodyDef.position.set(2.25f,10);
 
+        float width = 4;
+        float height = 4;
+
+
         //shape
         PolygonShape boxShape = new PolygonShape();
-        boxShape.setAsBox(.5f, 1);
+        boxShape.setAsBox(2*width / 6, height / 4, new Vector2(width / 2, 3 * height / 4), 0);
+
 
         //fixture
         fixtureDef.shape = boxShape;
@@ -227,14 +212,14 @@ public class PhysicWorld {
         fixtureDef.density = 5;
 
         box = world.createBody(bodyDef);
-        box.createFixture(fixtureDef).setUserData("player");;
+        box.createFixture(fixtureDef).setUserData("player");
 
         boxShape.dispose();
         
         //box squat
         //box
         PolygonShape boxSquatShape = new PolygonShape();
-        boxSquatShape.setAsBox(0.5f, 0.5f, new Vector2(0,-.5f), 0);
+        boxSquatShape.setAsBox(2*width / 6, height / 4, new Vector2(width / 2, height / 4), 0);
         
         // //fixture
         fixtureDef.shape = boxSquatShape;
@@ -247,7 +232,10 @@ public class PhysicWorld {
         boxSquatShape.dispose();
         
         box.setAngularDamping(0);
-        box.setLinearDamping(0);
+        box.setLinearDamping(0.4f);
+        MassData massData = box.getMassData();
+        massData.mass = 20f;
+        box.setMassData(massData);
         // box.setGravityScale(1.5f);
         box.setFixedRotation(true);
     }
