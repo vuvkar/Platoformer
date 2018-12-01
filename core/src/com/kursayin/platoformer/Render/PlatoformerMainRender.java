@@ -12,6 +12,7 @@ import com.kursayin.platoformer.Components.PositionComponent;
 import com.kursayin.platoformer.Components.TextureComponent;
 import com.kursayin.platoformer.Platoformer;
 import com.kursayin.platoformer.Systems.DrawSystem;
+import com.kursayin.platoformer.PhysicWorld;;
 
 public class PlatoformerMainRender {
     Platoformer platoformer;
@@ -19,6 +20,7 @@ public class PlatoformerMainRender {
     SpriteBatch batch;
     Engine engine;
     DrawSystem drawSystem;
+    PhysicWorld world;
 
     BackgroundRender backgroundRender;
 
@@ -34,18 +36,25 @@ public class PlatoformerMainRender {
         ankap.add(new TextureComponent(tex));
         engine.addEntity(ankap);
         engine.addSystem(drawSystem);
+
+        world=new PhysicWorld();
     }
     
     public void act(float delta) {
-
         backgroundRender.act(delta);
+        world.act(delta);
     }
     
     public void draw() {
         batch.begin();
         backgroundRender.draw();
         engine.update(Gdx.graphics.getDeltaTime());
+        world.render(Gdx.graphics.getDeltaTime());
         batch.end();
+    }
+
+    public void resize(int width, int height){
+        world.resize(width, height);
     }
 
     public void dispose() {
