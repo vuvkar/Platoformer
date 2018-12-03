@@ -101,7 +101,7 @@ public class PhysicWorld {
 
     public void createGround() {
         for (MapLayer layer : map.getLayers()) {
-            if (layer.getName().equals("ground")) {
+            if (layer.getName().equals("ground") || layer.getName().equals("pipes")) {
                 for (MapObject object: layer.getObjects()) {
                     if(object instanceof RectangleMapObject) {
                         Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
