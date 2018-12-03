@@ -1,18 +1,14 @@
 package com.kursayin.platoformer.Render;
 
-import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.kursayin.platoformer.Components.PositionComponent;
-import com.kursayin.platoformer.Components.TextureComponent;
+import com.kursayin.platoformer.Constants;
 import com.kursayin.platoformer.Platoformer;
 import com.kursayin.platoformer.Systems.DrawSystem;
-import com.kursayin.platoformer.PhysicWorld;;
+import com.kursayin.platoformer.PhysicWorld;
+import com.kursayin.platoformer.Systems.InputControllerSystem;;
 
 public class PlatoformerMainRender {
     Platoformer platoformer;
@@ -20,44 +16,51 @@ public class PlatoformerMainRender {
     SpriteBatch batch;
     Engine engine;
     DrawSystem drawSystem;
-    PhysicWorld world;
+    PhysicWorld physicWorld;
+    WorldRender worldRender;
+    InputControllerSystem inputControllerSystem;
 
     BackgroundRender backgroundRender;
 
     public PlatoformerMainRender(Platoformer platoformer) {
         this.platoformer = platoformer;
+        float worldHeightinTiles = 6;
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false,  (worldHeightinTiles / Constants.SCREEN_HEIGHT) * Constants.SCREEN_WIDTH, worldHeightinTiles);
         batch = new SpriteBatch();
-        backgroundRender = new BackgroundRender(batch);
+        backgroundRender = new BackgroundRender(batch, camera);
         engine = new Engine();
         drawSystem = new DrawSystem(batch);
-        Entity ankap = new Entity();
-        ankap.add(new PositionComponent(50,50));
-        TextureRegion tex = new TextureRegion(new Texture(Gdx.files.internal("badlogic.jpg")));
-        ankap.add(new TextureComponent(tex));
-        engine.addEntity(ankap);
         engine.addSystem(drawSystem);
+        worldRender = new WorldRender("first.tmx", batch);
 
-        world=new PhysicWorld();
+        camera.update();
+        physicWorld = new PhysicWorld(camera, worldRender.tiledMap);
+
+        inputControllerSystem = new InputControllerSystem(physicWorld);
     }
-    
+
     public void act(float delta) {
-        backgroundRender.act(delta);
-        world.act(delta);
+        physicWorld.act(delta);
     }
-    
+
     public void draw() {
+        float delta = Gdx.graphics.getDeltaTime();
+        camera.update();
         batch.begin();
         backgroundRender.draw();
-        engine.update(Gdx.graphics.getDeltaTime());
-        world.render(Gdx.graphics.getDeltaTime());
+        engine.update(delta);
+        physicWorld.render(delta);
         batch.end();
+        worldRender.renderer.setView(camera);
+        worldRender.render();
     }
 
-    public void resize(int width, int height){
-        world.resize(width, height);
+    public void resize(int width, int height) {
+      //  physicWorld.resize(width, height);
     }
 
     public void dispose() {
-
+        worldRender.dispose();
     }
 }

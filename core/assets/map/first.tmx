@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.0" orientation="orthogonal" renderorder="right-up" width="50" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="16" nextobjectid="18">
+ <tileset firstgid="1" source="assets.tsx"/>
+ <layer id="14" name="background" width="50" height="13">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIJRMBLAJEYGhslAPIVxZNlNCfAGutdniLkZG8gB+iGXAn8MlnCg1B+U6icFMA4TDAAA+wdu
+  </data>
+ </layer>
+ <layer id="15" name="grapic" width="50" height="13">
+  <data encoding="base64" compression="zlib">
+   eJztwYEAAAAAw6D5Ux/gClUBAMAbCigAAQ==
+  </data>
+ </layer>
+ <objectgroup draworder="index" id="3" name="ground">
+  <object id="7" x="0" y="192" width="893" height="16"/>
+  <object id="8" x="178" y="128" width="45" height="15"/>
+  <object id="9" x="481" y="111" width="47" height="17"/>
+ </objectgroup>
+ <objectgroup id="4" name="pipes">
+  <object id="16" x="111.5" y="144.5" width="32" height="46.5"/>
+  <object id="17" x="368" y="160" width="31.5" height="31.5"/>
+ </objectgroup>
+ <objectgroup id="5" name="coins"/>
+ <objectgroup id="6" name="bricks"/>
+</map>
