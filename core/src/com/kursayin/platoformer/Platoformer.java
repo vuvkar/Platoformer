@@ -21,7 +21,7 @@ public class Platoformer extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(100f/255f, 100f/255f, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		float delta = Gdx.graphics.getDeltaTime();
